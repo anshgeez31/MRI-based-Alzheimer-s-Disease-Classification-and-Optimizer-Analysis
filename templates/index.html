@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>TB Audio Diagnosis</title>
+</head>
+<body>
+    <h1>Upload Cough Sample</h1>
+    <input type="file" id="audioInput">
+    <button onclick="sendAudio()">Submit</button>
+    <p id="result"></p>
+
+    <script>
+        async function sendAudio() {
+            const input = document.getElementById('audioInput').files[0];
+            const formData = new FormData();
+            formData.append('audio', input);
+    
+            const response = await fetch('/predict', {
+                method: 'POST',
+                body: formData
+            });
+    
+            const data = await response.json();
+    
+            let resultText = `Prediction: ${data.label} (Confidence: ${data.confidence})`;
+    
+            if (data.actual_tb) {
+                resultText += `<br>Actual TB Status: ${data.actual_tb}`;
+                resultText += `<br>Age: ${data.age}`;
+                resultText += `<br>Gender: ${data.gender}`;
+            }
+    
+            document.getElementById('result').innerHTML = resultText;
+        }
+    </script>
+    
+</body>
+</html>
